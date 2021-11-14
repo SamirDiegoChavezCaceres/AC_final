@@ -239,7 +239,7 @@ class Ghost {
 
 //all my ghosts
 ghosts = [
-  new Ghost('blinky', 348, 250),
+  new Ghost('blinky', 350, 250),
   ]
 
 //draw my ghosts onto the grid
@@ -307,7 +307,7 @@ function checkForWin() {
 // your GitHub with your Key visible to others.
 // This is advice for your own benefit. You can hide your SDK Key by converting this project to use packages such as .dotenv. 
 var alanBtnInstance = alanBtn({
-  key: "UNIQUE_ALAN_AI_SDK_KEY",
+  key: "fea7206a7dd951bc7a4e4bc7829eb6972e956eca572e1d8b807a3e2338fdd0dc/stage",
   onCommand: function (commandData) {
     if (commandData.command === "go-left") {
       goLeft()
