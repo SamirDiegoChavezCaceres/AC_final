@@ -306,6 +306,7 @@ function checkForWin() {
 // Please hide your SDK key and do not publish onto GitHub or share on the internet. This project is for your own local use only and not to be published onto
 // your GitHub with your Key visible to others.
 // This is advice for your own benefit. You can hide your SDK Key by converting this project to use packages such as .dotenv. 
+
 var alanBtnInstance = alanBtn({
   key: "fea7206a7dd951bc7a4e4bc7829eb6972e956eca572e1d8b807a3e2338fdd0dc/stage",
   onCommand: function (commandData) {
@@ -327,3 +328,44 @@ var alanBtnInstance = alanBtn({
   },
   rootEl: document.getElementById("alan-btn"),
 });
+
+// recocimiento en español
+let rec;
+if (!("webkitSpeechRecognition" in window)) {
+  alert("disculpas, no puedes usar la API");
+
+} 
+else {
+  rec = new webkitSpeechRecognition();
+  rec.lang = "es-AR";
+  rec.continuous = true;
+  rec.interim = true;
+  rec.addEventListener("result",iniciar);
+}
+
+function iniciar(event){
+  for (let i = event.resultIndex; i < event.results.length; i++){
+    console.log(event.results[i][0].transcript);
+    let resultado = event.results[i][0].transcript;
+    if(resultado === "izquierda"){
+      goLeft();
+    }
+    if(resultado === "derecha"){
+      goRight();
+    }
+    if(resultado === "arriba"){
+      goUp();
+    }
+    if(resultado === "abajo"){
+      goDown();
+    }
+    if(resultado === "empezar"){
+      startGame()
+    }
+    //document.getElementById('texto').innerHTML = event.results[i][0].transcript;
+  }
+}
+
+
+rec.start();
+
