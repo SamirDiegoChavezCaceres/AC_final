@@ -4,10 +4,17 @@ const width = 28
 let score = 0
 let gameOverId
 let checkWinId
+//pacman
 let leftId
 let rightId
 let upId
 let downId
+//ghost
+let leftIdG
+let rightIdG
+let upIdG
+let downIdG
+
 const grid = document.querySelector('.grid')
 const layout = [
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -74,9 +81,9 @@ function startGame() {
   //ghosts.forEach(ghost => moveGhost(ghost))
   //ghosts.forEach(ghost => {moveGhostT(ghost),document.addEventListener('keyup',moveGhostT)})
   
-  document.addEventListener('keyup',moveGhostT(ghosts[0]))
+  document.addEventListener('keyup',moveGhostE)
   
-  //document.addEventListener('keyleft',moveGhostT)
+  //document.addEventListener('keyUp',movePacman)
   checkWinId = setInterval(checkForWin, 100)
   gameOverId = setInterval(checkForGameOver, 100)
 }
@@ -285,8 +292,46 @@ function moveGhost(ghost) {
   }, ghost.speed)
 }
 
-//move pacman
-function moveGhostT(e,ghost) {
+
+//pacman event
+function moveGhostE(e){
+  switch(e.keyCode) {
+    case 37:
+        goLeftG()
+      break
+    case 38:
+        goUpG()
+      break
+    case 39:
+        goRightG()
+      break
+    case 40:
+        goDownG()
+      break
+  }
+}
+
+function goUpG() {
+  clearInterval(rightIdG)
+  clearInterval(leftIdG)
+  clearInterval(downIdG)
+  upIdG = setInterval(function () {
+    //0000
+    if (!squares[ghosts[0].currentIndex - width].classList.contains('wall') ||
+        squares[ghosts[0].currentIndex - width].classList.contains('ghost-lair') ) {
+        //remove the ghosts classes
+        squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
+        squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
+        //move into that space
+        ghosts[0].currentIndex -= width
+        squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+    } else {
+      clearInterval(upIdG)
+    }
+  }, 500)
+}
+
+function moveGhostT(e) {
   let direction;
   switch(e.keyCode) {
     case 37:
