@@ -68,7 +68,7 @@ startButton.addEventListener('click', startGame)
 
 //create Characters
 //draw pacman onto the board
-let pacmanCurrentIndex = 293
+let pacmanCurrentIndex = 293 // aparecion de pacman modificada
 squares[pacmanCurrentIndex].classList.add('pac-man')
 squares[pacmanCurrentIndex].classList.add('pac-man-right')
 
@@ -227,7 +227,7 @@ class Ghost {
 
 //all my ghosts
 ghosts = [
-  new Ghost('blinky', 153, 250),
+  new Ghost('blinky', 153, 250), // lugar de aparicion
   ]
 
 //draw my ghosts onto the grid
