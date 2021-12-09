@@ -71,8 +71,12 @@ createBoard()
 
 function startGame() {
   //move the Ghosts randomly
-  ghosts.forEach(ghost => moveGhost(ghost))
-  document.addEventListener('keyup', movePacman)
+  //ghosts.forEach(ghost => moveGhost(ghost))
+  //ghosts.forEach(ghost => {moveGhostT(ghost),document.addEventListener('keyup',moveGhostT)})
+  
+  document.addEventListener('keyup',moveGhostT(ghosts[0]))
+  
+  //document.addEventListener('keyleft',moveGhostT)
   checkWinId = setInterval(checkForWin, 100)
   gameOverId = setInterval(checkForGameOver, 100)
 }
@@ -250,6 +254,7 @@ ghosts.forEach(ghost => {
 
 function moveGhost(ghost) {
   const directions =  [-1, +1, width, -width]
+
   let direction = directions[Math.floor(Math.random() * directions.length)]
 
   ghost.timerId = setInterval(function() {
@@ -279,6 +284,58 @@ function moveGhost(ghost) {
     }
   }, ghost.speed)
 }
+
+//move pacman
+function moveGhostT(e,ghost) {
+  let direction;
+  switch(e.keyCode) {
+    case 37:
+      direction = -width; // left
+      break
+    case 38:// up
+      direction = 1;
+      break
+    case 39://right
+      direction = width; // left
+      break
+    case 40:// down
+      direction = -1;
+      break
+  }
+  console.log(direction)
+  //const directions =  [-1, +1, width, -width]
+
+   //= directions[Math.floor(Math.random() * directions.length)]
+
+  ghost.timerId = setInterval(function() {
+    //if the next squre your ghost is going to go to does not have a ghost and does not have a wall
+    if  (!squares[ghost.currentIndex + direction].classList.contains('ghost') &&
+      !squares[ghost.currentIndex + direction].classList.contains('wall') ) {
+        //remove the ghosts classes
+        squares[ghost.currentIndex].classList.remove(ghost.className)
+        squares[ghost.currentIndex].classList.remove('ghost', 'scared-ghost')
+        //move into that space
+        ghost.currentIndex += direction
+        squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
+    //else find a new random direction ot go in
+    } //else direction = directions[Math.floor(Math.random() * directions.length)] // se comento esta linea dado que el usuario decide 
+    //el movimiento
+
+    //if the ghost is currently scared
+    if (ghost.isScared) {
+      squares[ghost.currentIndex].classList.add('scared-ghost')
+    }
+
+    //if the ghost is currently scared and pacman is on it
+    if(ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
+      squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost')
+      ghost.currentIndex = ghost.startIndex
+      score +=100
+      squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
+    }
+  }, ghost.speed)
+}
+
 
 //check for a game over
 function checkForGameOver() {
