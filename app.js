@@ -76,6 +76,7 @@ function createBoard() {
 }
 createBoard()
 
+//startGameMulti
 function startGame() {
   //move the Ghosts randomly
   //ghosts.forEach(ghost => moveGhost(ghost))
@@ -252,13 +253,18 @@ class Ghost {
 ghosts = [
   new Ghost('blinky', 350, 250),
   ]
-
+  
+singleGhosts = [
+  //mas fantasmas
+  new Ghost('blinky', 350, 250),
+  ]
 //draw my ghosts onto the grid
 ghosts.forEach(ghost => {
   squares[ghost.currentIndex].classList.add(ghost.className)
   squares[ghost.currentIndex].classList.add('ghost')
   })
 
+//1 solo jugador
 function moveGhost(ghost) {
   const directions =  [-1, +1, width, -width]
 
@@ -316,7 +322,6 @@ function goUpG() {
   clearInterval(leftIdG)
   clearInterval(downIdG)
   upIdG = setInterval(function () {
-    //0000
     if (!squares[ghosts[0].currentIndex - width].classList.contains('wall') ||
         squares[ghosts[0].currentIndex - width].classList.contains('ghost-lair') ) {
         //remove the ghosts classes
@@ -331,63 +336,65 @@ function goUpG() {
   }, 500)
 }
 
-function moveGhostT(e) {
-  let direction;
-  switch(e.keyCode) {
-    case 37:
-      direction = -width; // left
-      break
-    case 38:// up
-      direction = 1;
-      break
-    case 39://right
-      direction = width; // left
-      break
-    case 40:// down
-      direction = -1;
-      break
-  }
-  console.log(direction)
-  //const directions =  [-1, +1, width, -width]
-
-   //= directions[Math.floor(Math.random() * directions.length)]
-
-  ghost.timerId = setInterval(function() {
-    //if the next squre your ghost is going to go to does not have a ghost and does not have a wall
-    if  (!squares[ghost.currentIndex + direction].classList.contains('ghost') &&
-      !squares[ghost.currentIndex + direction].classList.contains('wall') ) {
-        //remove the ghosts classes
-        squares[ghost.currentIndex].classList.remove(ghost.className)
-        squares[ghost.currentIndex].classList.remove('ghost', 'scared-ghost')
-        //move into that space
-        ghost.currentIndex += direction
-        squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
-    //else find a new random direction ot go in
-    } //else direction = directions[Math.floor(Math.random() * directions.length)] // se comento esta linea dado que el usuario decide 
-    //el movimiento
-
-    //if the ghost is currently scared
-    if (ghost.isScared) {
-      squares[ghost.currentIndex].classList.add('scared-ghost')
+function goRightG() {
+  clearInterval(leftIdG)
+  clearInterval(upIdG)
+  clearInterval(downIdG)
+  rightIdG = setInterval(function () {
+    //Si a donde el fantasma vaya a moverse no es una pared o su guarida
+    if(!squares[ghosts[0].currentIndex +1].classList.contains('wall') ||
+    squares[ghosts[0].currentIndex +1].classList.contains('ghost-lair') 
+    ) {
+      //se movera
+      //remove the ghosts classes
+      squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
+      squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
+      //move into that space
+      ghosts[0].currentIndex += 1
+      if (squares[ghosts[0].currentIndex +1] === squares[392]) {
+        ghosts[0].currentIndex = 364
+      }
+      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+      
+    } else {
+      //en caso contrario dejara de moverse
+      clearInterval(rightIdG)
     }
-
-    //if the ghost is currently scared and pacman is on it
-    if(ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
-      squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost')
-      ghost.currentIndex = ghost.startIndex
-      score +=100
-      squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
-    }
-  }, ghost.speed)
+  }, 500)
 }
 
+function goDownG() {
+  clearInterval(rightIdG)
+  clearInterval(upIdG)
+  clearInterval(leftIdG)
+  downIdG = setInterval(function () {
+    if (!squares[ghosts[0].currentIndex + width].classList.contains('wall') ||
+        squares[ghosts[0].currentIndex + width].classList.contains('ghost-lair')
+    ) {
+      squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
+      squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
+
+      ghosts[0].currentIndex += width
+      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+      
+    } else {
+      clearInterval(downId)
+    }
+  }, 500)
+}
 
 //check for a game over
 function checkForGameOver() {
   if (squares[pacmanCurrentIndex].classList.contains('ghost') &&
     !squares[pacmanCurrentIndex].classList.contains('scared-ghost')) {
     ghosts.forEach(ghost => clearInterval(ghost.timerId))
-    document.removeEventListener('keyup', movePacman)
+    //document.removeEventListener('keyup', movePacman)
+    document.removeEventListener('keyup', moveGhostE)
+    clearInterval(rightIdG)
+    clearInterval(leftIdG)
+    clearInterval(downIdG)
+    clearInterval(upIdG)
+    removePacman()
     scoreDisplay.innerHTML = 'YOU LOSE!'
     clearInterval(gameOverId)
     clearInterval(checkWinId)
@@ -404,32 +411,6 @@ function checkForWin() {
     clearInterval(checkWinId)
   }
 }
-
-// Please hide your SDK key and do not publish onto GitHub or share on the internet. This project is for your own local use only and not to be published onto
-// your GitHub with your Key visible to others.
-// This is advice for your own benefit. You can hide your SDK Key by converting this project to use packages such as .dotenv. 
-
-var alanBtnInstance = alanBtn({
-  key: "fea7206a7dd951bc7a4e4bc7829eb6972e956eca572e1d8b807a3e2338fdd0dc/stage",
-  onCommand: function (commandData) {
-    if (commandData.command === "go-left") {
-      goLeft()
-    }
-    if (commandData.command === "go-right") {
-      goRight()
-    }
-    if (commandData.command === "go-down") {
-      goDown()
-    }
-    if (commandData.command === "go-up") {
-      goUp()
-    }
-    if (commandData.command === "start-game") {
-      startGame()
-    }
-  },
-  rootEl: document.getElementById("alan-btn"),
-});
 
 // recocimiento en español
 let rec;
@@ -467,7 +448,6 @@ function iniciar(event){
     //document.getElementById('texto').innerHTML = event.results[i][0].transcript;
   }
 }
-
 
 rec.start();
 
