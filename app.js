@@ -303,16 +303,16 @@ function moveGhost(ghost) {
 function moveGhostE(e){
   switch(e.keyCode) {
     case 37:
-        goLeftG()
+        goLeftG() // listo
       break
     case 38:
-        goUpG()
+        goUpG() // listo
       break
     case 39:
-        goRightG()
+        goRightG() // listo
       break
     case 40:
-        goDownG()
+        goDownG() // listo
       break
   }
 }
@@ -378,7 +378,30 @@ function goDownG() {
       squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
       
     } else {
-      clearInterval(downId)
+      clearInterval(downIdG)
+    }
+  }, 500)
+}
+
+function goLeftG() {
+  clearInterval(rightIdG)
+  clearInterval(upIdG)
+  clearInterval(downIdG)
+  leftIdG = setInterval(function () {
+    if (
+      !squares[ghosts[0].currentIndex - 1].classList.contains('wall') ||
+      squares[ghosts[0].currentIndex - 1].classList.contains('ghost-lair')
+    ) {
+      squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
+      squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
+
+      ghosts[0].currentIndex -= 1
+      if (squares[ghosts[0].currentIndex - 1] === squares[363]) {
+        ghosts[0].currentIndex = 391
+      }
+      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+    } else {
+      clearInterval(leftIdG)
     }
   }, 500)
 }
