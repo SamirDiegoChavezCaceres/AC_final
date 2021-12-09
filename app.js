@@ -347,19 +347,19 @@ function iniciar(event){
   for (let i = event.resultIndex; i < event.results.length; i++){
     console.log(event.results[i][0].transcript);
     let resultado = event.results[i][0].transcript;
-    if(resultado === "izquierda"){
+    if(resultado.includes("izquierda")){
       goLeft();
     }
-    if(resultado === "derecha"){
+    if(resultado.includes("derecha")){
       goRight();
     }
-    if(resultado === "arriba"){
+    if(resultado.includes("arriba")){
       goUp();
     }
-    if(resultado === "abajo"){
+    if(resultado.includes("abajo")){
       goDown();
     }
-    if(resultado === "empezar"){
+    if(resultado.includes("empezar")){
       startGame()
     }
     //document.getElementById('texto').innerHTML = event.results[i][0].transcript;
