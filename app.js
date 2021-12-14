@@ -1,7 +1,8 @@
 const scoreDisplay = document.getElementById('score')
 const startButton = document.getElementById('start-button')
 const width = 28
-let score = 0
+//datos del juego
+let score = 0 //puntaje
 let gameOverId
 let checkWinId
 //pacman
@@ -16,7 +17,7 @@ let upIdG
 let downIdG
 
 const grid = document.querySelector('.grid')
-const layout = [
+const layout = [ //grid del mapa
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
   1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
   1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1,
@@ -55,7 +56,7 @@ const layout = [
 const squares = []
 
 //create your board
-function createBoard() {
+function createBoard() { //creacion de la tabla
   for (let i = 0; i < layout.length; i++) {
     const square = document.createElement('div')
     grid.appendChild(square)
@@ -63,14 +64,14 @@ function createBoard() {
 
     //add layout to the board
     if(layout[i] === 0) {
-      squares[i].classList.add('pac-dot')
+      squares[i].classList.add('pac-dot') //imagen de bolita
       squares[i].innerHTML = '.'
     } else if (layout[i] === 1) {
-      squares[i].classList.add('wall')
+      squares[i].classList.add('wall') //imagen de pared
     } else if (layout[i] === 2) {
-      squares[i].classList.add('ghost-lair')
+      squares[i].classList.add('ghost-lair') //imagen de guarida de fantasmas
     } else if (layout[i] === 3) {
-      squares[i].classList.add('power-pellet')
+      squares[i].classList.add('power-pellet') //imagen de bolita especial
     }
   }
 }
@@ -78,21 +79,15 @@ createBoard()
 
 //startGameMulti
 function startGame() {
-  //move the Ghosts randomly
-  //ghosts.forEach(ghost => moveGhost(ghost))
-  //ghosts.forEach(ghost => {moveGhostT(ghost),document.addEventListener('keyup',moveGhostT)})
   
-  document.addEventListener('keyup',moveGhostE)
-  
-  //document.addEventListener('keyUp',movePacman)
-  checkWinId = setInterval(checkForWin, 100)
+  document.addEventListener('keyup',moveGhostE) 
+  checkWinId = setInterval(checkForWin, 100) //ciclos para las funciones
   gameOverId = setInterval(checkForGameOver, 100)
 
   // recocimiento en español
   let rec;
-  if (!("webkitSpeechRecognition" in window)) {
+  if (!("webkitSpeechRecognition" in window)) { //para pedir permiso de voz
     alert("disculpas, no puedes usar la API");
-
   } 
   else {
     rec = new webkitSpeechRecognition();
@@ -111,7 +106,7 @@ let pacmanCurrentIndex = 490
 squares[pacmanCurrentIndex].classList.add('pac-man')
 squares[pacmanCurrentIndex].classList.add('pac-man-right')
 
-function removePacman() {
+function removePacman() { //Quitar la imagen del pacman
   squares[pacmanCurrentIndex].classList.remove('pac-man')
   squares[pacmanCurrentIndex].classList.remove('pac-man-right')
   squares[pacmanCurrentIndex].classList.remove('pac-man-left')
@@ -119,34 +114,34 @@ function removePacman() {
   squares[pacmanCurrentIndex].classList.remove('pac-man-up')
 }
 
-function goLeft() {
-  if(leftId!= null){
+function goLeft() { //Movimiento izquierda pacman
+  if(leftId!= null){ //En caso de repetir el mismo comando
     clearInterval(leftId)
   }
   clearInterval(rightId)
-  clearInterval(upId)
-  clearInterval(downId)
-  leftId = setInterval(function () {
+  clearInterval(upId)     //Se cancela el comando que se encuentra ejecutando
+  clearInterval(downId)   
+  leftId = setInterval(function () { //Se repite la funcion siguiente:
     if (
     squares[pacmanCurrentIndex -1].classList.contains('wall') ||
     squares[pacmanCurrentIndex -1].classList.contains('ghost-lair')
-    ) {
-      clearInterval(leftId)
-    } else {
-      removePacman()
-      pacmanCurrentIndex -= 1
-      if (squares[pacmanCurrentIndex -1] === squares[363]) {
+    ) { //Si a donde el pacman quiera moverse es una pared o la guarida de los fantasmas
+      clearInterval(leftId) 
+    } else { //movimiento del pacman
+      removePacman() //Se borra la posicion actual
+      pacmanCurrentIndex -= 1 //actualizacion de la posicion del pacman
+      if (squares[pacmanCurrentIndex -1] === squares[363]) { //por si se llega al limite horizontal del mapa
         pacmanCurrentIndex = 391
       }
-      pacDotEaten()
-      powerPelletEaten()
+      pacDotEaten() //Comer bolitas
+      powerPelletEaten() //Comer bolitas especiales
     }
-    squares[pacmanCurrentIndex].classList.add('pac-man')
+    squares[pacmanCurrentIndex].classList.add('pac-man') // actualizacion de imagen 
     squares[pacmanCurrentIndex].classList.add('pac-man-left')
   }, 500)
 }
 
-function goRight() {
+function goRight() { //Movimiento derecha pacman == mpviento de izquierda
   if(rightId!= null){
     clearInterval(rightId)
   }
@@ -173,31 +168,31 @@ function goRight() {
   }, 500)
 }
 
-function goUp() {
-  if(upId!= null){
-    clearInterval(upId)
+function goUp() { //Movimiento arriba pacman 
+  if(upId!= null){ //En caso de repetir el mismo comando
+    clearInterval(upId) 
   }
   clearInterval(rightId)
-  clearInterval(leftId)
+  clearInterval(leftId) //Se cancela el comando que se encuentra ejecutando
   clearInterval(downId)
-  upId = setInterval(function () {
+  upId = setInterval(function () {//Se repite la funcion siguiente:
   if(
     squares[pacmanCurrentIndex -width].classList.contains('wall') ||
     squares[pacmanCurrentIndex -width].classList.contains('ghost-lair')
-    ) {
+    ) { //Si a donde el pacman quiera moverse es una pared o la guarida de los fantasmas
       clearInterval(upId)
-    } else {
-      removePacman()
-      pacmanCurrentIndex -= width
-      squares[pacmanCurrentIndex].classList.add('pac-man')
+    } else { //movimiento del pacman
+      removePacman() //Se borra la posicion actual
+      pacmanCurrentIndex -= width //actualizacion de la posicion del pacman
+      squares[pacmanCurrentIndex].classList.add('pac-man') //actualizacion de imagen 
       squares[pacmanCurrentIndex].classList.add('pac-man-up')
-      pacDotEaten()
-      powerPelletEaten()
+      pacDotEaten() //Comer bolitas
+      powerPelletEaten() //Comer bolitas especiales
     }
   }, 500)
 }
 
-function goDown() {
+function goDown() { //Movimiento abajo pacman
   if(downId!= null){
     clearInterval(downId)
   }
@@ -222,6 +217,7 @@ function goDown() {
 }
 
 //move pacman
+/* TRABAJO FUTURO PARA SOLO GAME
 function movePacman(e) {
   switch(e.keyCode) {
     case 37:
@@ -238,18 +234,21 @@ function movePacman(e) {
       break
   }
 }
+*/
 
 // what happens when you eat a pac-dot
+// lo que pasa cuando comes una bolita normal
 function pacDotEaten() {
   if (squares[pacmanCurrentIndex].classList.contains('pac-dot')) {
     score++
-    scoreDisplay.innerHTML = score
-    squares[pacmanCurrentIndex].classList.remove('pac-dot')
+    scoreDisplay.innerHTML = score //se actualiza el puntaje
+    squares[pacmanCurrentIndex].classList.remove('pac-dot') //se quita la imagen
     squares[pacmanCurrentIndex].innerHTML = ''
   }
 }
 
 //what happens when you eat a power-pellet
+//Lo que ocurre cuando comes una bolita de poder
 function powerPelletEaten() {
   if (squares[pacmanCurrentIndex].classList.contains('power-pellet')) {
     score +=10
@@ -260,6 +259,7 @@ function powerPelletEaten() {
 }
 
 //make the ghosts stop flashing
+//para que ya no se assuten los fantasmas
 function unScareGhosts() {
   ghosts.forEach(ghost => ghost.isScared = false)
 }
