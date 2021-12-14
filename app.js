@@ -4,10 +4,17 @@ const width = 28
 let score = 0
 let gameOverId
 let checkWinId
+//pacman
 let leftId
 let rightId
 let upId
 let downId
+//ghost
+let leftIdG
+let rightIdG
+let upIdG
+let downIdG
+
 const grid = document.querySelector('.grid')
 const layout = [
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -69,10 +76,15 @@ function createBoard() {
 }
 createBoard()
 
+//startGameMulti
 function startGame() {
   //move the Ghosts randomly
-  ghosts.forEach(ghost => moveGhost(ghost))
-  document.addEventListener('keyup', movePacman)
+  //ghosts.forEach(ghost => moveGhost(ghost))
+  //ghosts.forEach(ghost => {moveGhostT(ghost),document.addEventListener('keyup',moveGhostT)})
+  
+  document.addEventListener('keyup',moveGhostE)
+  
+  //document.addEventListener('keyUp',movePacman)
   checkWinId = setInterval(checkForWin, 100)
   gameOverId = setInterval(checkForGameOver, 100)
 }
@@ -241,15 +253,21 @@ class Ghost {
 ghosts = [
   new Ghost('blinky', 350, 250),
   ]
-
+  
+singleGhosts = [
+  //mas fantasmas
+  new Ghost('blinky', 350, 250),
+  ]
 //draw my ghosts onto the grid
 ghosts.forEach(ghost => {
   squares[ghost.currentIndex].classList.add(ghost.className)
   squares[ghost.currentIndex].classList.add('ghost')
   })
 
+//1 solo jugador
 function moveGhost(ghost) {
   const directions =  [-1, +1, width, -width]
+
   let direction = directions[Math.floor(Math.random() * directions.length)]
 
   ghost.timerId = setInterval(function() {
@@ -280,12 +298,126 @@ function moveGhost(ghost) {
   }, ghost.speed)
 }
 
+
+//pacman event
+function moveGhostE(e){
+  switch(e.keyCode) {
+    case 37:
+        goLeftG() // listo
+      break
+    case 38:
+        goUpG() // listo
+      break
+    case 39:
+        goRightG() // listo
+      break
+    case 40:
+        goDownG() // listo
+      break
+  }
+}
+
+function goUpG() {
+  clearInterval(rightIdG)
+  clearInterval(leftIdG)
+  clearInterval(downIdG)
+  upIdG = setInterval(function () {
+    if (!squares[ghosts[0].currentIndex - width].classList.contains('wall') ||
+        squares[ghosts[0].currentIndex - width].classList.contains('ghost-lair') ) {
+        //remove the ghosts classes
+        squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
+        squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
+        //move into that space
+        ghosts[0].currentIndex -= width
+        squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+    } else {
+      clearInterval(upIdG)
+    }
+  }, 500)
+}
+
+function goRightG() {
+  clearInterval(leftIdG)
+  clearInterval(upIdG)
+  clearInterval(downIdG)
+  rightIdG = setInterval(function () {
+    //Si a donde el fantasma vaya a moverse no es una pared o su guarida
+    if(!squares[ghosts[0].currentIndex +1].classList.contains('wall') ||
+    squares[ghosts[0].currentIndex +1].classList.contains('ghost-lair') 
+    ) {
+      //se movera
+      //remove the ghosts classes
+      squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
+      squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
+      //move into that space
+      ghosts[0].currentIndex += 1
+      if (squares[ghosts[0].currentIndex +1] === squares[392]) {
+        ghosts[0].currentIndex = 364
+      }
+      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+      
+    } else {
+      //en caso contrario dejara de moverse
+      clearInterval(rightIdG)
+    }
+  }, 500)
+}
+
+function goDownG() {
+  clearInterval(rightIdG)
+  clearInterval(upIdG)
+  clearInterval(leftIdG)
+  downIdG = setInterval(function () {
+    if (!squares[ghosts[0].currentIndex + width].classList.contains('wall') ||
+        squares[ghosts[0].currentIndex + width].classList.contains('ghost-lair')
+    ) {
+      squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
+      squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
+
+      ghosts[0].currentIndex += width
+      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+      
+    } else {
+      clearInterval(downIdG)
+    }
+  }, 500)
+}
+
+function goLeftG() {
+  clearInterval(rightIdG)
+  clearInterval(upIdG)
+  clearInterval(downIdG)
+  leftIdG = setInterval(function () {
+    if (
+      !squares[ghosts[0].currentIndex - 1].classList.contains('wall') ||
+      squares[ghosts[0].currentIndex - 1].classList.contains('ghost-lair')
+    ) {
+      squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
+      squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
+
+      ghosts[0].currentIndex -= 1
+      if (squares[ghosts[0].currentIndex - 1] === squares[363]) {
+        ghosts[0].currentIndex = 391
+      }
+      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+    } else {
+      clearInterval(leftIdG)
+    }
+  }, 500)
+}
+
 //check for a game over
 function checkForGameOver() {
   if (squares[pacmanCurrentIndex].classList.contains('ghost') &&
     !squares[pacmanCurrentIndex].classList.contains('scared-ghost')) {
     ghosts.forEach(ghost => clearInterval(ghost.timerId))
-    document.removeEventListener('keyup', movePacman)
+    //document.removeEventListener('keyup', movePacman)
+    document.removeEventListener('keyup', moveGhostE)
+    clearInterval(rightIdG)
+    clearInterval(leftIdG)
+    clearInterval(downIdG)
+    clearInterval(upIdG)
+    removePacman()
     scoreDisplay.innerHTML = 'YOU LOSE!'
     clearInterval(gameOverId)
     clearInterval(checkWinId)
@@ -302,32 +434,6 @@ function checkForWin() {
     clearInterval(checkWinId)
   }
 }
-
-// Please hide your SDK key and do not publish onto GitHub or share on the internet. This project is for your own local use only and not to be published onto
-// your GitHub with your Key visible to others.
-// This is advice for your own benefit. You can hide your SDK Key by converting this project to use packages such as .dotenv. 
-
-var alanBtnInstance = alanBtn({
-  key: "fea7206a7dd951bc7a4e4bc7829eb6972e956eca572e1d8b807a3e2338fdd0dc/stage",
-  onCommand: function (commandData) {
-    if (commandData.command === "go-left") {
-      goLeft()
-    }
-    if (commandData.command === "go-right") {
-      goRight()
-    }
-    if (commandData.command === "go-down") {
-      goDown()
-    }
-    if (commandData.command === "go-up") {
-      goUp()
-    }
-    if (commandData.command === "start-game") {
-      startGame()
-    }
-  },
-  rootEl: document.getElementById("alan-btn"),
-});
 
 // recocimiento en español
 let rec;
@@ -365,7 +471,6 @@ function iniciar(event){
     //document.getElementById('texto').innerHTML = event.results[i][0].transcript;
   }
 }
-
 
 rec.start();
 
