@@ -216,25 +216,6 @@ function goDown() { //Movimiento abajo pacman
   }, 500)
 }
 
-//move pacman
-/* TRABAJO FUTURO PARA SOLO GAME
-function movePacman(e) {
-  switch(e.keyCode) {
-    case 37:
-       goLeft()
-      break
-    case 38:
-        goUp()
-      break
-    case 39:
-        goRight()
-      break
-    case 40:
-        goDown()
-      break
-  }
-}
-*/
 
 // what happens when you eat a pac-dot
 // lo que pasa cuando comes una bolita normal
@@ -265,6 +246,7 @@ function unScareGhosts() {
 }
 
 //create ghosts using Constructors
+//Creacion del constructor de los fantasmas
 class Ghost {
   constructor(className, startIndex, speed) {
     this.className = className
@@ -277,6 +259,7 @@ class Ghost {
 }
 
 //all my ghosts
+//los fantasmas fueron reducidos y solo se dejo al de color blaco
 ghosts = [
   new Ghost('blinky', 350, 250),
   ]
@@ -291,42 +274,9 @@ ghosts.forEach(ghost => {
   squares[ghost.currentIndex].classList.add('ghost')
   })
 
-//1 solo jugador
-function moveGhost(ghost) {
-  const directions =  [-1, +1, width, -width]
 
-  let direction = directions[Math.floor(Math.random() * directions.length)]
-
-  ghost.timerId = setInterval(function() {
-    //if the next squre your ghost is going to go to does not have a ghost and does not have a wall
-    if  (!squares[ghost.currentIndex + direction].classList.contains('ghost') &&
-      !squares[ghost.currentIndex + direction].classList.contains('wall') ) {
-        //remove the ghosts classes
-        squares[ghost.currentIndex].classList.remove(ghost.className)
-        squares[ghost.currentIndex].classList.remove('ghost', 'scared-ghost')
-        //move into that space
-        ghost.currentIndex += direction
-        squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
-    //else find a new random direction ot go in
-    } else direction = directions[Math.floor(Math.random() * directions.length)]
-
-    //if the ghost is currently scared
-    if (ghost.isScared) {
-      squares[ghost.currentIndex].classList.add('scared-ghost')
-    }
-
-    //if the ghost is currently scared and pacman is on it
-    if(ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
-      squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost')
-      ghost.currentIndex = ghost.startIndex
-      score +=100
-      squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
-    }
-  }, ghost.speed)
-}
-
-
-//pacman event
+//ghost event
+//Movimiento del fantasma mediante teclas
 function moveGhostE(e){
   switch(e.keyCode) {
     case 37:
@@ -344,50 +294,53 @@ function moveGhostE(e){
   }
 }
 
-function goUpG() {
+// funciones para el movimiento del fantasma mediante teclas 
+function goUpG() {// movimiento hacia arriba
+  //En caso se repita la misma instruccion
   if(upIdG != null){
     clearInterval(upIdG)
   }
   clearInterval(rightIdG)
-  clearInterval(leftIdG)
+  clearInterval(leftIdG)// cancelacion de los comandos ejercutados con anteridad
   clearInterval(downIdG)
   upIdG = setInterval(function () {
     if (!squares[ghosts[0].currentIndex - width].classList.contains('wall') ||
-        squares[ghosts[0].currentIndex - width].classList.contains('ghost-lair') ) {
+        squares[ghosts[0].currentIndex - width].classList.contains('ghost-lair') ) {// si no tenmos cerca una pared o a otro fantasma
         //remove the ghosts classes
         squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
         squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
         //move into that space
-        ghosts[0].currentIndex -= width
-        squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+        ghosts[0].currentIndex -= width // actaualizacion del indice
+        squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost') // actualizamos la imagen
     } else {
       clearInterval(upIdG)
     }
   }, 500)
 }
 
-function goRightG() {
+function goRightG() { // movimiento hacia derecha
+  //En caso se repita la misma instruccion
   if(rightIdG != null){
     clearInterval(rightIdG)
   }
   clearInterval(leftIdG)
-  clearInterval(upIdG)
+  clearInterval(upIdG)// cancelacion de los comandos ejercutados con anteridad
   clearInterval(downIdG)
   rightIdG = setInterval(function () {
     //Si a donde el fantasma vaya a moverse no es una pared o su guarida
     if(!squares[ghosts[0].currentIndex +1].classList.contains('wall') ||
     squares[ghosts[0].currentIndex +1].classList.contains('ghost-lair') 
-    ) {
+    ) {// si no tenmos cerca una pared o a otro fantasma
       //se movera
       //remove the ghosts classes
       squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
       squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
       //move into that space
       ghosts[0].currentIndex += 1
-      if (squares[ghosts[0].currentIndex +1] === squares[392]) {
+      if (squares[ghosts[0].currentIndex +1] === squares[392]) {// verificamos los limites
         ghosts[0].currentIndex = 364
       }
-      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost') // actualizamos su imagen en la tabla
       
     } else {
       //en caso contrario dejara de moverse
@@ -396,73 +349,79 @@ function goRightG() {
   }, 500)
 }
 
-function goDownG() {
+function goDownG() {// movimiento hacia abajo fanatasma
+  //En caso se repita la misma instruccion
   if(downIdG != null){
     clearInterval(downIdG)
   }
   clearInterval(rightIdG)
-  clearInterval(upIdG)
+  clearInterval(upIdG)// cancelacion de los comandos ejercutados con anteridad
   clearInterval(leftIdG)
   downIdG = setInterval(function () {
     if (!squares[ghosts[0].currentIndex + width].classList.contains('wall') ||
         squares[ghosts[0].currentIndex + width].classList.contains('ghost-lair')
-    ) {
+    ) {// si no tenmos cerca una pared o a otro fantasma
       squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
       squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
 
-      ghosts[0].currentIndex += width
-      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+      ghosts[0].currentIndex += width// actualizaremos el valor de su indice
+      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')// actualizaremos su posicon en la tabla
       
     } else {
-      clearInterval(downIdG)
+      clearInterval(downIdG)// en caso no se cumplan las condiciones cancelaremos el movimiento
     }
   }, 500)
 }
 
-function goLeftG() {
+function goLeftG() { // movimiento a la izquierda fanatasma
   //En caso se repita la misma instruccion
   if(leftIdG != null){
     clearInterval(leftIdG)
   }
   clearInterval(rightIdG)
-  clearInterval(upIdG)
+  clearInterval(upIdG) // cancelacion de los comandos ejercutados con anteridad
   clearInterval(downIdG)
-  leftIdG = setInterval(function () {
+  leftIdG = setInterval(function () { // se realiza la siguiente
     if (
       !squares[ghosts[0].currentIndex - 1].classList.contains('wall') ||
       squares[ghosts[0].currentIndex - 1].classList.contains('ghost-lair')
-    ) {
-      squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className)
-      squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost')
+    ) { // si no tenmos cerca una pared o a otro fantasma 
+      squares[ghosts[0].currentIndex].classList.remove(ghosts[0].className) // removeremos al fantasma de su posicion actual
+      squares[ghosts[0].currentIndex].classList.remove('ghost', 'scared-ghost') // este en caos este asustado
 
-      ghosts[0].currentIndex -= 1
-      if (squares[ghosts[0].currentIndex - 1] === squares[363]) {
+      ghosts[0].currentIndex -= 1 // actualizaremos el valor de su indice
+      if (squares[ghosts[0].currentIndex - 1] === squares[363]) { // verificamos los limites
         ghosts[0].currentIndex = 391
       }
-      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')
+      squares[ghosts[0].currentIndex].classList.add(ghosts[0].className, 'ghost')// actualizaremos su posicon en la tabla
     } else {
-      clearInterval(leftIdG)
+      clearInterval(leftIdG) // en caso no se cumplan las condiciones cancelaremos el movimiento
     }
   }, 500)
 }
 
 //check for a game over
+//Verificando el fin del juego
 function checkForGameOver() {
   if (squares[pacmanCurrentIndex].classList.contains('ghost') &&
-    !squares[pacmanCurrentIndex].classList.contains('scared-ghost')) {
+    !squares[pacmanCurrentIndex].classList.contains('scared-ghost')) { // si el indice de pacman tiene encima aun fantasma y este no esta 
+    //asustado entonces habremos perdido
     ghosts.forEach(ghost => clearInterval(ghost.timerId))
-    //document.removeEventListener('keyup', movePacman)
     document.removeEventListener('keyup', moveGhostE)
-    clearInterval(rightIdG)
-    clearInterval(leftIdG)
-    clearInterval(downIdG)
-    clearInterval(upIdG)
-    clearInterval(rightId)
-    clearInterval(leftId)
-    clearInterval(downId)
-    clearInterval(upId)
-    removePacman()
-    scoreDisplay.innerHTML = 'YOU LOSE!'
+    // limpianos los ids de las distintas posiciones
+    // fantasma
+    clearInterval(rightIdG) // finalizacion del rightId 
+    clearInterval(leftIdG)// finalizacion del leftIdG 
+    clearInterval(downIdG)// finalizacion del downIdG
+    clearInterval(upIdG)// finalizacion del upIdG
+    // pacman
+    clearInterval(rightId)// finalizacion del rightId
+    clearInterval(leftId) // finalizacion del leftId
+    clearInterval(downId)// finalizacion del downId
+    clearInterval(upId)// finalizacion del upId
+
+    removePacman() // eliminamos a pacman
+    scoreDisplay.innerHTML = 'YOU LOSE!' // camiamos el mensaje
     clearInterval(gameOverId)
     clearInterval(checkWinId)
     clearInterval(vozID);
@@ -470,55 +429,42 @@ function checkForGameOver() {
 }
 
 //check for a win - more is when this score is reached
+//Verifcando el ganar
 function checkForWin() {
   if (score > 274) {
     ghosts.forEach(ghost => clearInterval(ghost.timerId))
     document.removeEventListener('keyup', movePacman)
-    scoreDisplay.innerHTML = 'YOU WIN!'
-    clearInterval(gameOverId)
-    clearInterval(checkWinId)
-    clearInterval(vozID);
+    scoreDisplay.innerHTML = 'YOU WIN!' // cambio del mensaje de la parte superior
+    clearInterval(gameOverId) // finalizacion de gameOverId
+    clearInterval(checkWinId) // termina checkWinId
+    clearInterval(vozID); // temina la voz ID
   }
 }
 
+// comandos de voz
 function iniciar(event){
-  console.time("medicion");
+  console.time("medicion"); // estas lineas nos serviran para medir la latencia del personaje
   for (let i = event.resultIndex; i < event.results.length; i++){
     console.log(event.results[i][0].transcript);
     let resultado = event.results[i][0].transcript;
-    if(resultado.includes("izquierda")){
-      goLeft();
+    if(resultado.includes("izquierda")){ // si la palabra que hemos dicho es igual a izquierda
+      goLeft(); // haremos uso de la funcion de goLeft
     }
-    if(resultado.includes("derecha")){
-      goRight();
+    if(resultado.includes("derecha")){// si la palabra que hemos dicho es igual a derecha
+      goRight();// heremos uso dela funcion de goRight
     }
-    if(resultado.includes("arriba")){
-      goUp();
+    if(resultado.includes("arriba")){// si la palabra que hemos dicho es igual a arriba
+      goUp();// heremos uso dela funcion de goUp
     }
-    if(resultado.includes("abajo")){
-      goDown();
+    if(resultado.includes("abajo")){// si la palabra que hemos dicho es igual a abajo
+      goDown();// heremos uso dela funcion de goDown
     }
+    // funicon para iniciar el juego
     if(resultado.includes("empezar")){
       startGame()
     }
-    console.timeEnd("medicion");
+    console.timeEnd("medicion"); // termina de medir la latencia y la muestra por consolo
     
-    //document.getElementById('texto').innerHTML = event.results[i][0].transcript;
   }
 }
 
-
-/*function start(){
-  startTime = Date.now();
-  interval = setInterval(function(){
-      updateDisplay(Date.now() - startTime);
-  });
-}
-
-function stop(){
-  clearInterval(interval);
-}
-
-function updateDisplay(currentTime){
-  iniciar();
-}*/
