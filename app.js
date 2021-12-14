@@ -87,6 +87,21 @@ function startGame() {
   //document.addEventListener('keyUp',movePacman)
   checkWinId = setInterval(checkForWin, 100)
   gameOverId = setInterval(checkForGameOver, 100)
+
+  // recocimiento en español
+  let rec;
+  if (!("webkitSpeechRecognition" in window)) {
+    alert("disculpas, no puedes usar la API");
+
+  } 
+  else {
+    rec = new webkitSpeechRecognition();
+    rec.lang = "es-AR";
+    rec.continuous = true;
+    rec.interim = true;
+    vozID = setInterval(rec.addEventListener("result",iniciar),500);
+  }
+  rec.start();
 }
 startButton.addEventListener('click', startGame)
 
@@ -105,6 +120,9 @@ function removePacman() {
 }
 
 function goLeft() {
+  if(leftId!= null){
+    clearInterval(leftId)
+  }
   clearInterval(rightId)
   clearInterval(upId)
   clearInterval(downId)
@@ -129,6 +147,9 @@ function goLeft() {
 }
 
 function goRight() {
+  if(rightId!= null){
+    clearInterval(rightId)
+  }
   clearInterval(leftId)
   clearInterval(upId)
   clearInterval(downId)
@@ -153,6 +174,9 @@ function goRight() {
 }
 
 function goUp() {
+  if(upId!= null){
+    clearInterval(upId)
+  }
   clearInterval(rightId)
   clearInterval(leftId)
   clearInterval(downId)
@@ -174,6 +198,9 @@ function goUp() {
 }
 
 function goDown() {
+  if(downId!= null){
+    clearInterval(downId)
+  }
   clearInterval(rightId)
   clearInterval(upId)
   clearInterval(leftId)
@@ -318,6 +345,9 @@ function moveGhostE(e){
 }
 
 function goUpG() {
+  if(upIdG != null){
+    clearInterval(upIdG)
+  }
   clearInterval(rightIdG)
   clearInterval(leftIdG)
   clearInterval(downIdG)
@@ -337,6 +367,9 @@ function goUpG() {
 }
 
 function goRightG() {
+  if(rightIdG != null){
+    clearInterval(rightIdG)
+  }
   clearInterval(leftIdG)
   clearInterval(upIdG)
   clearInterval(downIdG)
@@ -364,6 +397,9 @@ function goRightG() {
 }
 
 function goDownG() {
+  if(downIdG != null){
+    clearInterval(downIdG)
+  }
   clearInterval(rightIdG)
   clearInterval(upIdG)
   clearInterval(leftIdG)
@@ -384,6 +420,10 @@ function goDownG() {
 }
 
 function goLeftG() {
+  //En caso se repita la misma instruccion
+  if(leftIdG != null){
+    clearInterval(leftIdG)
+  }
   clearInterval(rightIdG)
   clearInterval(upIdG)
   clearInterval(downIdG)
@@ -417,10 +457,15 @@ function checkForGameOver() {
     clearInterval(leftIdG)
     clearInterval(downIdG)
     clearInterval(upIdG)
+    clearInterval(rightId)
+    clearInterval(leftId)
+    clearInterval(downId)
+    clearInterval(upId)
     removePacman()
     scoreDisplay.innerHTML = 'YOU LOSE!'
     clearInterval(gameOverId)
     clearInterval(checkWinId)
+    clearInterval(vozID);
   }
 }
 
@@ -432,24 +477,12 @@ function checkForWin() {
     scoreDisplay.innerHTML = 'YOU WIN!'
     clearInterval(gameOverId)
     clearInterval(checkWinId)
+    clearInterval(vozID);
   }
 }
 
-// recocimiento en español
-let rec;
-if (!("webkitSpeechRecognition" in window)) {
-  alert("disculpas, no puedes usar la API");
-
-} 
-else {
-  rec = new webkitSpeechRecognition();
-  rec.lang = "es-AR";
-  rec.continuous = true;
-  rec.interim = true;
-  rec.addEventListener("result",iniciar);
-}
-
 function iniciar(event){
+  console.time("medicion");
   for (let i = event.resultIndex; i < event.results.length; i++){
     console.log(event.results[i][0].transcript);
     let resultado = event.results[i][0].transcript;
@@ -468,9 +501,24 @@ function iniciar(event){
     if(resultado.includes("empezar")){
       startGame()
     }
+    console.timeEnd("medicion");
+    
     //document.getElementById('texto').innerHTML = event.results[i][0].transcript;
   }
 }
 
-rec.start();
 
+/*function start(){
+  startTime = Date.now();
+  interval = setInterval(function(){
+      updateDisplay(Date.now() - startTime);
+  });
+}
+
+function stop(){
+  clearInterval(interval);
+}
+
+function updateDisplay(currentTime){
+  iniciar();
+}*/
